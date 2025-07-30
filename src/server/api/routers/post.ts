@@ -16,7 +16,9 @@ export const postRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return ctx.db.post.create({
         data: {
-          name: input.name
+          name: input.name,
+          content: "This is a new post",
+          authorId: ctx.auth.userId,
         },
       });
     }),
@@ -30,6 +32,9 @@ export const postRouter = createTRPCRouter({
   }),
 
   getAll: publicProcedure.query(async ({ ctx }) => {
-    return ctx.db.post.findMany();
+    const posts = await ctx.db.post.findMany({
+      orderBy: { createdAt: "desc" }
+    });
+    return posts ?? null;
   }),
 });
